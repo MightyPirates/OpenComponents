@@ -1,17 +1,4 @@
-package li.cil.occ.mods.computercraft;
-
-import com.google.common.collect.Iterables;
-import cpw.mods.fml.common.Loader;
-import dan200.computercraft.api.filesystem.IMount;
-import dan200.computercraft.api.filesystem.IWritableMount;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.peripheral.IComputerAccess;
-import dan200.computercraft.api.peripheral.IPeripheral;
-import li.cil.oc.api.FileSystem;
-import li.cil.oc.api.Network;
-import li.cil.oc.api.network.*;
-import li.cil.occ.OpenComponents;
-import net.minecraft.world.World;
+	package li.cil.occ.mods.computercraft;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -20,9 +7,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import li.cil.oc.api.FileSystem;
+import li.cil.oc.api.Network;
+import li.cil.oc.api.network.Arguments;
+import li.cil.oc.api.network.Context;
+import li.cil.oc.api.network.ManagedEnvironment;
+import li.cil.oc.api.network.Node;
+import li.cil.oc.api.network.Visibility;
+import li.cil.occ.OpenComponents;
+import net.minecraft.world.World;
+
+import com.google.common.collect.Iterables;
+import com.google.gson.Gson;
+
+import cpw.mods.fml.common.Loader;
+import dan200.computercraft.api.filesystem.IMount;
+import dan200.computercraft.api.filesystem.IWritableMount;
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.peripheral.IComputerAccess;
+import dan200.computercraft.api.peripheral.IPeripheral;
+
 public final class DriverPeripheral16 extends DriverPeripheral<IPeripheral> {
     private static final Method ComputerCraft_getPeripheralAt;
-
+    
     static {
         Method getPeripheralAt = null;
         try {
@@ -54,8 +61,10 @@ public final class DriverPeripheral16 extends DriverPeripheral<IPeripheral> {
     }
 
     public static class Environment extends li.cil.oc.api.prefab.ManagedEnvironment implements li.cil.oc.api.network.ManagedPeripheral {
-        protected final IPeripheral peripheral;
-
+    	public final IPeripheral peripheral;
+    	public final SupportedLuaContext luaCon = new SupportedLuaContext(this);
+    	protected HashMap<String, Object[]> events = new HashMap<String, Object[]>();
+    	
         protected final List<String> _methods;
 
         protected final Map<String, FakeComputerAccess> accesses = new HashMap<String, FakeComputerAccess>();
@@ -91,7 +100,8 @@ public final class DriverPeripheral16 extends DriverPeripheral<IPeripheral> {
                 // an onConnect for it. Create a temporary access.
                 access = new FakeComputerAccess(this, context);
             }
-            return peripheral.callMethod(access, UnsupportedLuaContext.instance(), index, argArray);
+
+            return peripheral.callMethod(access, luaCon, index, argArray);
         }
 
         @Override
@@ -178,6 +188,13 @@ public final class DriverPeripheral16 extends DriverPeripheral<IPeripheral> {
 
             @Override
             public void queueEvent(final String event, final Object[] arguments) {
+            	owner.events.put(event, arguments);
+            	Gson g = new Gson();
+            	if(event.equals("op_tick_sync")){
+            		System.out.println("HMM mam to id:" + g.toJson(arguments));
+            		
+            	}
+            	
                 context.signal(event, arguments);
             }
 
@@ -191,24 +208,28 @@ public final class DriverPeripheral16 extends DriverPeripheral<IPeripheral> {
          * Since we abstract away anything language specific, we cannot support the
          * Lua context specific operations ComputerCraft provides.
          */
-        private final static class UnsupportedLuaContext implements ILuaContext {
-            protected static final UnsupportedLuaContext Instance = new UnsupportedLuaContext();
-
-            private UnsupportedLuaContext() {
-            }
-
-            public static UnsupportedLuaContext instance() {
-                return Instance;
+        private final static class SupportedLuaContext implements ILuaContext {
+            Environment owner;
+            private SupportedLuaContext(Environment owner) {
+            	this.owner = owner;
             }
 
             @Override
             public Object[] pullEvent(final String filter) throws Exception {
-                throw new UnsupportedOperationException();
+            	while(owner.events.get(filter)==null){
+            		Thread.sleep(50);
+            	}
+            	Object[] arr={null,owner.events.get(filter)[0]}; 
+            	return arr;
             }
 
             @Override
             public Object[] pullEventRaw(final String filter) throws InterruptedException {
-                throw new UnsupportedOperationException();
+            	while(owner.events.get(filter)==null){
+            		Thread.sleep(50);
+            	}
+            	Object[] arr={null,owner.events.get(filter)[0]}; 
+            	return arr;
             }
 
             @Override
