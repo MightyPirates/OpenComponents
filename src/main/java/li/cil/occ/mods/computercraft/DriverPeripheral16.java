@@ -59,6 +59,12 @@ public final class DriverPeripheral16 extends DriverPeripheral<IPeripheral> {
         protected final List<String> _methods;
 
         protected final Map<String, FakeComputerAccess> accesses = new HashMap<String, FakeComputerAccess>();
+        
+		public final SupportedLuaContext luaCon = new SupportedLuaContext(this);
+		private Object[] event;
+		private String eventName;
+		private final Object eventLock = new Object();
+		private long eventUUID = 0;
 
         public Environment(final IPeripheral peripheral) {
             this.peripheral = peripheral;
@@ -91,7 +97,7 @@ public final class DriverPeripheral16 extends DriverPeripheral<IPeripheral> {
                 // an onConnect for it. Create a temporary access.
                 access = new FakeComputerAccess(this, context);
             }
-            return peripheral.callMethod(access, UnsupportedLuaContext.instance(), index, argArray);
+            return peripheral.callMethod(access,luaCon, index, argArray);
         }
 
         @Override
@@ -178,6 +184,12 @@ public final class DriverPeripheral16 extends DriverPeripheral<IPeripheral> {
 
             @Override
             public void queueEvent(final String event, final Object[] arguments) {
+				synchronized (owner.eventLock) {
+					owner.eventUUID++;
+					owner.eventName = event;
+					owner.event = arguments;
+					owner.eventLock.notifyAll();
+				}
                 context.signal(event, arguments);
             }
 
@@ -191,24 +203,67 @@ public final class DriverPeripheral16 extends DriverPeripheral<IPeripheral> {
          * Since we abstract away anything language specific, we cannot support the
          * Lua context specific operations ComputerCraft provides.
          */
-        private final static class UnsupportedLuaContext implements ILuaContext {
-            protected static final UnsupportedLuaContext Instance = new UnsupportedLuaContext();
+        private final class SupportedLuaContext implements ILuaContext {
+        	Environment owner;
 
-            private UnsupportedLuaContext() {
-            }
-
-            public static UnsupportedLuaContext instance() {
-                return Instance;
-            }
+			private SupportedLuaContext(Environment owner) {
+				this.owner = owner;
+			}
 
             @Override
             public Object[] pullEvent(final String filter) throws Exception {
-                throw new UnsupportedOperationException();
+				long currentUUID = owner.eventUUID;
+				synchronized (owner.eventLock) {
+					boolean waiting = !filter.equals(owner.eventName)
+							|| owner.eventUUID == currentUUID;
+					while (waiting) {
+						try {
+							owner.eventLock.wait();
+							waiting = !filter.equals(owner.eventName)
+									|| owner.eventUUID == currentUUID;
+						} catch (InterruptedException e) {
+							waiting = !filter.equals(owner.eventName)
+									|| owner.eventUUID == currentUUID;// to
+																		// satisfy
+																		// java
+																		// specification
+																		// rules
+						}
+					}
+					Object[] res = new Object[1 + owner.event.length];
+					res[0] = owner.eventName;
+					for (int i = 1; i < res.length; i++)
+						res[i] = owner.event[i - 1];
+					return res;
+				}
             }
 
             @Override
             public Object[] pullEventRaw(final String filter) throws InterruptedException {
-                throw new UnsupportedOperationException();
+				long currentUUID = owner.eventUUID;
+				synchronized (owner.eventLock) {
+					boolean waiting = !filter.equals(owner.eventName)
+							|| owner.eventUUID == currentUUID;
+					while (waiting) {
+						try {
+							owner.eventLock.wait();
+							waiting = !filter.equals(owner.eventName)
+									|| owner.eventUUID == currentUUID;
+						} catch (InterruptedException e) {
+							waiting = !filter.equals(owner.eventName)
+									|| owner.eventUUID == currentUUID;// to
+																		// satisfy
+																		// java
+																		// specification
+																		// rules
+						}
+					}
+					Object[] res = new Object[1 + owner.event.length];
+					res[0] = owner.eventName;
+					for (int i = 1; i < res.length; i++)
+						res[i] = owner.event[i - 1];
+					return res;
+				}
             }
 
             @Override
