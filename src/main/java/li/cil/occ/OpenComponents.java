@@ -76,11 +76,12 @@ public class OpenComponents {
         Registry.add(new ModThaumcraft());
         Registry.add(new ModThermalExpansion());
         Registry.add(new ModTMechworks());
-        Registry.add(new ModVanilla());
 
         // Register the general IPeripheral driver last, if at all, to avoid it
         // being used rather than other more concrete implementations, such as
         // is the case in the Redstone in Motion driver (replaces 'move').
         Registry.add(new ModComputerCraft());
+        
+        Registry.add(new ModVanilla());
     }
 }
