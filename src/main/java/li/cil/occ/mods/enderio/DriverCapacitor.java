@@ -1,8 +1,6 @@
 package li.cil.occ.mods.enderio;
 
 import crazypants.enderio.power.ICapacitor;
-import gregtech.api.interfaces.tileentity.IBasicEnergyContainer;
-import gregtech.api.interfaces.tileentity.IEnergyConnected;
 import li.cil.oc.api.network.Arguments;
 import li.cil.oc.api.network.Callback;
 import li.cil.oc.api.network.Context;
