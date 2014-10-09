@@ -1,7 +1,7 @@
 package li.cil.occ;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import com.mojang.authlib.GameProfile;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -29,10 +29,9 @@ import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.UUID;
-
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -45,9 +44,13 @@ public class OpenComponents {
     public static final String Version = "@VERSION@";
 
     @Mod.Instance
-    public static OpenComponents instance;
+    public static OpenComponents Instance;
 
     public static final Logger Log = LogManager.getLogger(ID);
+
+    public static final Set<Runnable> ScheduledTicks = new HashSet<Runnable>();
+
+    public static final ExecutorService Executor = Executors.newCachedThreadPool();
 
     public static String[] modBlacklist = new String[]{
             ModThaumcraft.MOD_ID
@@ -59,9 +62,6 @@ public class OpenComponents {
 
     public static Boolean allowItemStackInspection = false;
 
-    public static Set<Runnable> tickHandlers = new HashSet<Runnable>();
-
-    public  static ExecutorService executorService = Executors.newCachedThreadPool();
     public static String fakePlayerUuid = "7e506b5d-2ccb-4ac4-a249-5624925b0c67";
 
     public static String fakePlayerName = "[OpenComponents]";
@@ -124,20 +124,21 @@ public class OpenComponents {
         Registry.add(new ModComputerCraft());
 
         FMLCommonHandler.instance().bus().register(this);
+    }
 
-    }
     @SubscribeEvent
-    public void onTick(TickEvent.ServerTickEvent event){
-         synchronized (tickHandlers){
-             for(Runnable handler:tickHandlers){
-                 handler.run();
-             }
-             tickHandlers.clear();
-         }
+    public void onTick(final TickEvent.ServerTickEvent e) {
+        synchronized (ScheduledTicks) {
+            for (final Runnable handler : ScheduledTicks) {
+                handler.run();
+            }
+            ScheduledTicks.clear();
+        }
     }
-    public static void schedule(Runnable handler){
-        synchronized (tickHandlers){
-            tickHandlers.add(handler);
+
+    public static void schedule(final Runnable handler) {
+        synchronized (ScheduledTicks) {
+            ScheduledTicks.add(handler);
         }
     }
 }

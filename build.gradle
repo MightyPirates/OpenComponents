@@ -54,10 +54,10 @@ repositories {
         name = "oc"
         url = "http://maven.cil.li/"
     }
-	maven {
-		name "FireBall API Depot"
-		url "http://dl.tsr.me/artifactory/libs-release-local"
-	}
+    maven {
+        name "FireBall API Depot"
+        url "http://dl.tsr.me/artifactory/libs-release-local"
+    }
 }
 
 // From http://stackoverflow.com/questions/10405970/how-do-i-define-a-compile-time-only-classpath-in-gradle
@@ -72,7 +72,7 @@ dependencies {
     provided "li.cil.oc:OpenComputers:MC${config.minecraft.version}-${config.oc.version}:api"
     provided "net.industrial-craft:industrialcraft-2:${config.ic2.version}:api"
     provided "com.gregoriust.gregtech:gregtech_${config.minecraft.version}:${config.gt.version}:dev"
-	provided "api:rotarycraft:${config.rotc.version}"
+    provided "api:rotarycraft:${config.rotc.version}"
 }
 
 sourceSets.main.compileClasspath += configurations.provided
