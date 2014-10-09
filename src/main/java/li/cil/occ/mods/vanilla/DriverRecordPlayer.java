@@ -12,15 +12,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityRecordPlayer;
 import net.minecraft.world.World;
 
-public final class DriverRecordPlayer extends DriverTileEntity implements NamedBlock {
+public final class DriverRecordPlayer extends DriverTileEntity {
     @Override
     public Class<?> getTileEntityClass() {
         return TileEntityRecordPlayer.class;
-    }
-
-    @Override
-    public String preferredName() {
-        return "jukebox";
     }
 
     @Override
@@ -28,9 +23,14 @@ public final class DriverRecordPlayer extends DriverTileEntity implements NamedB
         return new Environment((TileEntityRecordPlayer) world.getBlockTileEntity(x, y, z));
     }
 
-    public static final class Environment extends ManagedTileEntityEnvironment<TileEntityRecordPlayer> {
+    public static final class Environment extends ManagedTileEntityEnvironment<TileEntityRecordPlayer> implements NamedBlock {
         public Environment(final TileEntityRecordPlayer tileEntity) {
             super(tileEntity, "jukebox");
+        }
+
+        @Override
+        public String preferredName() {
+            return "jukebox";
         }
 
         @Callback(doc = "function():string -- Get the title of the record currently in the juke box.")

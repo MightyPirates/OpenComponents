@@ -19,13 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public final class DriverTileController extends DriverTileEntity implements NamedBlock {
+public final class DriverTileController extends DriverTileEntity {
     private static final Class<?> TileController = Reflection.getClass("appeng.me.tile.TileController");
-
-    @Override
-    public String preferredName() {
-        return "me_controller";
-    }
 
     @Override
     public Class<?> getTileEntityClass() {
@@ -37,9 +32,14 @@ public final class DriverTileController extends DriverTileEntity implements Name
         return new Environment((IGridTileEntity) world.getBlockTileEntity(x, y, z));
     }
 
-    public static final class Environment extends ManagedTileEntityEnvironment<IGridTileEntity> {
+    public static final class Environment extends ManagedTileEntityEnvironment<IGridTileEntity> implements NamedBlock {
         public Environment(final IGridTileEntity tileEntity) {
             super(tileEntity, "me_controller");
+        }
+
+        @Override
+        public String preferredName() {
+            return "me_controller";
         }
 
         @Callback(doc = "function(itemId:number[, itemDamage:number=0[, amount:number=1]]):boolean -- Requests to craft the specified item, and returns if the request was successful.")

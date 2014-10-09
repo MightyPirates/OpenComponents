@@ -12,15 +12,10 @@ import li.cil.oc.api.prefab.DriverTileEntity;
 import li.cil.occ.mods.ManagedTileEntityEnvironment;
 import net.minecraft.world.World;
 
-public final class DriverReactorChamber extends DriverTileEntity implements NamedBlock {
+public final class DriverReactorChamber extends DriverTileEntity {
     @Override
     public Class<?> getTileEntityClass() {
         return IReactorChamber.class;
-    }
-
-    @Override
-    public String preferredName() {
-        return "reactor_chamber";
     }
 
     @Override
@@ -28,9 +23,14 @@ public final class DriverReactorChamber extends DriverTileEntity implements Name
         return new Environment((IReactorChamber) world.getBlockTileEntity(x, y, z));
     }
 
-    public static final class Environment extends ManagedTileEntityEnvironment<IReactorChamber> {
+    public static final class Environment extends ManagedTileEntityEnvironment<IReactorChamber> implements NamedBlock {
         public Environment(final IReactorChamber tileEntity) {
             super(tileEntity, "reactor_chamber");
+        }
+
+        @Override
+        public String preferredName() {
+            return "reactor_chamber";
         }
 
         @Callback(doc = "function():number -- Get the reactor's heat.")

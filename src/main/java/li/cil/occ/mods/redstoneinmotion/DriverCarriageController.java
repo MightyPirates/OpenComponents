@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class DriverCarriageController extends DriverTileEntity implements NamedBlock {
+public final class DriverCarriageController extends DriverTileEntity {
     private static final Class<?> CarriageControllerEntity = Reflection.getClass("JAKJ.RedstoneInMotion.CarriageControllerEntity");
     private static final Class<?> CarriageObstructionException = Reflection.getClass("JAKJ.RedstoneInMotion.CarriageObstructionException");
     private static final Class<?> Directions = Reflection.getClass("JAKJ.RedstoneInMotion.Directions");
@@ -26,16 +26,11 @@ public final class DriverCarriageController extends DriverTileEntity implements 
     }
 
     @Override
-    public String preferredName() {
-        return "carriage";
-    }
-
-    @Override
     public ManagedEnvironment createEnvironment(final World world, final int x, final int y, final int z) {
         return new Environment(world.getBlockTileEntity(x, y, z));
     }
 
-    public static final class Environment extends ManagedTileEntityEnvironment<TileEntity> {
+    public static final class Environment extends ManagedTileEntityEnvironment<TileEntity> implements NamedBlock {
         private boolean isAnchored;
 
         // Arguments for an actual move, stored here until we hit the next
@@ -53,6 +48,11 @@ public final class DriverCarriageController extends DriverTileEntity implements 
 
         public Environment(final TileEntity tileEntity) {
             super(tileEntity, "carriage");
+        }
+
+        @Override
+        public String preferredName() {
+            return "carriage";
         }
 
         @Callback(direct = true, doc = "function([direction:number=6]):number -- Returns whether the controller is anchored.")
