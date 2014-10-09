@@ -13,9 +13,8 @@ public class ModAppEng implements IMod {
 
     @Override
     public void initialize() {
-        Driver.add(new DriverGridNode());
-        Driver.add(new DriverCellContainer());
-
+        //Driver.add(new DriverCellContainer()); Not possible but maybe keep for reference in case of api change.
+        Driver.add(new DriverController());
         Driver.add(new ConverterCellInventory());
     }
 }

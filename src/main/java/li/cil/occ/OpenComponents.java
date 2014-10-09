@@ -1,8 +1,11 @@
 package li.cil.occ;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import li.cil.occ.mods.Registry;
 import li.cil.occ.mods.appeng.ModAppEng;
 import li.cil.occ.mods.buildcraft.ModBuildCraft;
@@ -23,6 +26,11 @@ import li.cil.occ.mods.vanilla.ModVanilla;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Mod(modid = OpenComponents.ID, name = OpenComponents.Name, version = OpenComponents.Version, useMetadata = true)
 public class OpenComponents {
@@ -47,6 +55,9 @@ public class OpenComponents {
 
     public static Boolean allowItemStackInspection = false;
 
+    public static Set<Runnable> tickHandlers = new HashSet<Runnable>();
+
+    public  static ExecutorService executorService = Executors.newCachedThreadPool();
     @Mod.EventHandler
     public void preInit(final FMLPreInitializationEvent e) {
         final Configuration config = new Configuration(e.getSuggestedConfigurationFile());
@@ -92,5 +103,22 @@ public class OpenComponents {
         // being used rather than other more concrete implementations, such as
         // is the case in the Redstone in Motion driver (replaces 'move').
         Registry.add(new ModComputerCraft());
+
+        FMLCommonHandler.instance().bus().register(this);
+
+    }
+    @SubscribeEvent
+    public void onTick(TickEvent.ServerTickEvent event){
+         synchronized (tickHandlers){
+             for(Runnable handler:tickHandlers){
+                 handler.run();
+             }
+             tickHandlers.clear();
+         }
+    }
+    public static void schedule(Runnable handler){
+        synchronized (tickHandlers){
+            tickHandlers.add(handler);
+        }
     }
 }
