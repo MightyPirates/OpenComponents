@@ -25,27 +25,27 @@ public final class DriverCapacitor extends DriverTileEntity {
             super(tileEntity, "enderio_capacitor");
         }
 
-        @Callback(doc = "function():number --  Returns the minimum amount of energy the capacitor can receive!")
+        @Callback(doc = "function():number -- Returns the minimum amount of energy the capacitor can receive.")
         public Object[] getMinEnergyReceived(final Context context, final Arguments args) {
             return new Object[]{tileEntity.getMinEnergyReceived()};
         }
 
-        @Callback(doc = "function():number --  Returns the maximum amount of energy the capacitor can receive!")
+        @Callback(doc = "function():number -- Returns the maximum amount of energy the capacitor can receive.")
         public Object[] getMaxEnergyReceived(final Context context, final Arguments args) {
             return new Object[]{tileEntity.getMaxEnergyReceived()};
         }
 
-        @Callback(doc = "function():number --  Returns the maximum amount of energy the capacitor can store!")
+        @Callback(doc = "function():number -- Returns the maximum amount of energy the capacitor can store.")
         public Object[] getMaxEnergyStored(final Context context, final Arguments args) {
             return new Object[]{tileEntity.getMaxEnergyStored()};
         }
 
-        @Callback(doc = "function():number --  Returns the minimal activation energy!")
+        @Callback(doc = "function():number -- Returns the minimal activation energy.")
         public Object[] getMinActivationEnergy(final Context context, final Arguments args) {
             return new Object[]{tileEntity.getMinActivationEnergy()};
         }
 
-        @Callback(doc = "function():number --  Returns the power loss!")
+        @Callback(doc = "function():number -- Returns the power loss.")
         public Object[] getPowerLoss(final Context context, final Arguments args) {
             return new Object[]{tileEntity.getPowerLoss()};
         }
@@ -55,10 +55,9 @@ public final class DriverCapacitor extends DriverTileEntity {
             return new Object[]{tileEntity.getPowerLossRegularity()};
         }
 
-        @Callback(doc = "function():number -- Returns the maximum amount of energy that can be extracted from the capacitor!")
+        @Callback(doc = "function():number -- Returns the maximum amount of energy that can be extracted from the capacitor.")
         public Object[] getMaxEnergyExtracted(final Context context, final Arguments args) {
             return new Object[]{tileEntity.getMaxEnergyExtracted()};
         }
-
     }
 }

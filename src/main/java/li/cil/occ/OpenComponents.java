@@ -1,6 +1,7 @@
 package li.cil.occ;
 
 import cpw.mods.fml.common.FMLCommonHandler;
+import com.mojang.authlib.GameProfile;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -14,6 +15,7 @@ import li.cil.occ.mods.cofh.tileentity.ModCoFHTileEntity;
 import li.cil.occ.mods.cofh.transport.ModCoFHTransport;
 import li.cil.occ.mods.computercraft.ModComputerCraft;
 import li.cil.occ.mods.enderio.ModEnderIO;
+import li.cil.occ.mods.enderstorage.ModEnderStorage;
 import li.cil.occ.mods.forestry.ModForestry;
 import li.cil.occ.mods.gregtech.ModGregtech;
 import li.cil.occ.mods.ic2.ModIndustrialCraft2;
@@ -26,6 +28,8 @@ import li.cil.occ.mods.vanilla.ModVanilla;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.UUID;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -58,6 +62,12 @@ public class OpenComponents {
     public static Set<Runnable> tickHandlers = new HashSet<Runnable>();
 
     public  static ExecutorService executorService = Executors.newCachedThreadPool();
+    public static String fakePlayerUuid = "7e506b5d-2ccb-4ac4-a249-5624925b0c67";
+
+    public static String fakePlayerName = "[OpenComponents]";
+
+    public static GameProfile fakePlayerProfile;
+
     @Mod.EventHandler
     public void preInit(final FMLPreInitializationEvent e) {
         final Configuration config = new Configuration(e.getSuggestedConfigurationFile());
@@ -78,6 +88,14 @@ public class OpenComponents {
         allowItemStackInspection = config.get("vanilla", "allowItemStackInspection", false).
                 getBoolean(false);
 
+        fakePlayerUuid = config.get("general", "fakePlayerUuid", fakePlayerUuid).
+                getString();
+
+        fakePlayerName = config.get("general", "fakePlayerName", fakePlayerName).
+                getString();
+
+        fakePlayerProfile = new GameProfile(UUID.fromString(fakePlayerUuid), fakePlayerName);
+
         config.save();
     }
 
@@ -89,6 +107,7 @@ public class OpenComponents {
         Registry.add(new ModCoFHTileEntity());
         Registry.add(new ModCoFHTransport());
         Registry.add(new ModEnderIO());
+        Registry.add(new ModEnderStorage());
         Registry.add(new ModForestry());
         Registry.add(new ModGregtech());
         Registry.add(new ModIndustrialCraft2());
