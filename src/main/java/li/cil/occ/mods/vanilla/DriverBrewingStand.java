@@ -10,15 +10,10 @@ import li.cil.occ.mods.ManagedTileEntityEnvironment;
 import net.minecraft.tileentity.TileEntityBrewingStand;
 import net.minecraft.world.World;
 
-public final class DriverBrewingStand extends DriverTileEntity implements NamedBlock {
+public final class DriverBrewingStand extends DriverTileEntity {
     @Override
     public Class<?> getTileEntityClass() {
         return TileEntityBrewingStand.class;
-    }
-
-    @Override
-    public String preferredName() {
-        return "brewing_stand";
     }
 
     @Override
@@ -26,9 +21,14 @@ public final class DriverBrewingStand extends DriverTileEntity implements NamedB
         return new Environment((TileEntityBrewingStand) world.getTileEntity(x, y, z));
     }
 
-    public static final class Environment extends ManagedTileEntityEnvironment<TileEntityBrewingStand> {
+    public static final class Environment extends ManagedTileEntityEnvironment<TileEntityBrewingStand> implements NamedBlock {
         public Environment(final TileEntityBrewingStand tileEntity) {
             super(tileEntity, "brewing_stand");
+        }
+
+        @Override
+        public String preferredName() {
+            return "brewing_stand";
         }
 
         @Callback(doc = "function():number -- Get the number of ticks remaining of the current brewing operation.")

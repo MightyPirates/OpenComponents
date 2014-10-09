@@ -11,15 +11,10 @@ import net.minecraft.potion.Potion;
 import net.minecraft.tileentity.TileEntityBeacon;
 import net.minecraft.world.World;
 
-public final class DriverBeacon extends DriverTileEntity implements NamedBlock {
+public final class DriverBeacon extends DriverTileEntity {
     @Override
     public Class<?> getTileEntityClass() {
         return TileEntityBeacon.class;
-    }
-
-    @Override
-    public String preferredName() {
-        return "beacon";
     }
 
     @Override
@@ -27,9 +22,14 @@ public final class DriverBeacon extends DriverTileEntity implements NamedBlock {
         return new Environment((TileEntityBeacon) world.getTileEntity(x, y, z));
     }
 
-    public static final class Environment extends ManagedTileEntityEnvironment<TileEntityBeacon> {
+    public static final class Environment extends ManagedTileEntityEnvironment<TileEntityBeacon> implements NamedBlock {
         public Environment(final TileEntityBeacon tileEntity) {
             super(tileEntity, "beacon");
+        }
+
+        @Override
+        public String preferredName() {
+            return "beacon";
         }
 
         @Callback(doc = "function():number -- Get the number of levels for this beacon.")

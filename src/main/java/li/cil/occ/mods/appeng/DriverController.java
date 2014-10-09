@@ -121,7 +121,7 @@ public class DriverController extends DriverTileEntity {
         }
     }
 
-    public static class Craftable extends AbstractValue {
+    public static final class Craftable extends AbstractValue {
         private IAEItemStack stack;
         private TileController controller;
 
@@ -217,7 +217,7 @@ public class DriverController extends DriverTileEntity {
         }
     }
 
-    public static class CraftingStatus extends AbstractValue {
+    public static final class CraftingStatus extends AbstractValue {
         private boolean isComputing = true;
 
         private ICraftingLink link;
